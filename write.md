@@ -14,7 +14,7 @@
 #### 防范
 Openzeppline:
 https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol
-
+```
 pragma solidity ^0.5.2;
 
 /**
@@ -80,5 +80,6 @@ library SafeMath {
         return a % b;
     }
 }
+```
 ##### 应用了SafeMath函数的智能合约实例：
 https://etherscan.io/address/0xB8c77482e45F1F44dE1745F52C74426C631bDD52#code
